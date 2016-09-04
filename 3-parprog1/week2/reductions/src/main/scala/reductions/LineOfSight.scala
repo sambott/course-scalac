@@ -102,7 +102,7 @@ object LineOfSight {
       i += 1
     }
   }
-  
+
   /** Pushes the maximum angle in the prefix of the array to each leaf of the
    *  reduction `tree` in parallel, and then calls `downsweepTraverse` to write
    *  the `output` angles.
@@ -123,7 +123,8 @@ object LineOfSight {
   def parLineOfSight(input: Array[Float], output: Array[Float], threshold: Int): Unit = {
     val len = input.length
     require(output.length >= len)
-    val tree = upsweep(input, 0, len, threshold)
+    output(0) = 0
+    val tree = upsweep(input, 1, len, threshold)
     downsweep(input, output, 0f, tree)
   }
 }

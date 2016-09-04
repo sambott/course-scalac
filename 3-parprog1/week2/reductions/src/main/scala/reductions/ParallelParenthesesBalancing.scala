@@ -91,15 +91,12 @@ object ParallelParenthesesBalancing {
         traverse(from, until, Balance.empty)
       } else {
         val midPoint = (until - from) / 2 + from
-        val (l,r) = parallel(reduce(from, midPoint - 1), reduce(midPoint, until))
+        val (l,r) = parallel(reduce(from, midPoint), reduce(midPoint, until))
         l + r
       }
     }
 
     reduce(0, chars.length).isBalanced
   }
-
-  // For those who want more:
-  // Prove that your reduction operator is associative!
 
 }
