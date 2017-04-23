@@ -15,6 +15,9 @@ scalacOptions ++= Seq(
   "-Xexperimental"
 )
 
+fork in run := true
+javaOptions += "-Xmx4G"
+
 libraryDependencies ++= Seq(
   "com.sksamuel.scrimage" %% "scrimage-core" % "2.1.6", // for visualization
   // You don’t *have to* use Spark, but in case you want to, we have added the dependency

@@ -47,7 +47,7 @@ object Main extends App {
     val tempDestination = tempFolder.resolve(s"temperatures/$year/$zoom/$x-$y.png")
     Files.createDirectories(tempDestination.getParent)
 
-    println(s"creating temp image ${tempDestination.getFileName.toString}")
+    println(s"creating temp image $tempDestination")
     val img = Visualization2.visualizeGrid(grid, palette, zoom, x, y)
     img.output(tempDestination)
 
@@ -55,7 +55,7 @@ object Main extends App {
       val devDestination = tempFolder.resolve(s"deviations/$year/$zoom/$x-$y.png")
       Files.createDirectories(devDestination.getParent)
 
-      println(s"creating deviation image ${devDestination.getFileName}")
+      println(s"creating deviation image $devDestination")
       def devs = (lat: Int, lon: Int) => {
         grid(lat, lon) - normals(lat, lon)
       }
@@ -65,9 +65,9 @@ object Main extends App {
   }
 
   for {
-    zoom <- 0 to 3
     (year, temps) <- data.par
     grid = Manipulation.makeGrid(temps)
+    zoom <- 0 to 3
     noTiles = (0 until zoom).foldLeft(1){ case (acc, next) => acc * 2 } - 1
     x <- 0 to noTiles
     y <- 0 to noTiles
