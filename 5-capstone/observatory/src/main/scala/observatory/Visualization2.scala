@@ -25,7 +25,7 @@ object Visualization2 {
     d10: Double,
     d11: Double
   ): Double = {
-    ???
+    d00 * (1 - x) * (1 - y) + d10 * x * (1 - y) + d01 * (1 - x) * y + d11 * x * y
   }
 
   /**
@@ -43,7 +43,38 @@ object Visualization2 {
     x: Int,
     y: Int
   ): Image = {
-    ???
+    val imageWidth = 256
+    val imageHeight = 256
+    val alpha = 127
+
+    val locations = for {
+      i <- (0 until imageWidth).par
+      j <- 0 until imageHeight
+      xTile = i.toDouble / imageWidth + x
+      yTile = j.toDouble / imageHeight + y
+    } yield j * imageWidth + i -> Location(Interaction.yToLat(yTile, zoom), Interaction.xToLon(xTile, zoom))
+
+    val pixels = locations.map { case (i, loc) =>
+
+      val latRange = List(Math.floor(loc.lat).toInt, Math.ceil(loc.lat).toInt)
+      val lonRange = List(Math.floor(loc.lon).toInt, Math.ceil(loc.lon).toInt)
+
+      val d = {
+        for {
+          xPos <- 0 to 1
+          yPos <- 0 to 1
+        } yield (xPos, yPos) -> grid(latRange(1 - yPos), lonRange(xPos))
+      }.toMap
+
+      val dx = loc.lon - lonRange.head
+      val dy = latRange(1) - loc.lat
+
+      val temp = bilinearInterpolation(dx, dy, d((0, 0)), d((0, 1)), d((1, 0)), d((1, 1)))
+      val colour = Visualization.interpolateColor(colors, temp)
+      (i, Pixel(colour.red, colour.green, colour.blue, alpha))
+    }
+
+    Image(imageWidth, imageHeight, pixels.toArray.sortBy(_._1).map(_._2))
   }
 
 }
